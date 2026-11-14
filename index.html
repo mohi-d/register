@@ -59,6 +59,15 @@ mask:radial-gradient(circle 16px at 0 62%,#0000 98%,#000) left/51% 100% no-repea
 .pop p{margin:0 0 6px;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.pop.on .box{animation:pp .3s ease}@keyframes pp{from{transform:scale(.9);opacity:0}}}
 @media (prefers-reduced-motion:no-preference){.view.on{animation:in .25s ease}@keyframes in{from{opacity:0}to{opacity:1}}}
+
+.bar{height:10px;border-radius:6px;background:var(--line);overflow:hidden;margin:6px 0 4px}.bar i{display:block;height:100%;background:var(--orange);width:0;transition:width .4s}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.tile{border:2px dashed var(--line);border-radius:12px;padding:8px 4px;text-align:center;font-size:13px;min-height:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.tile.ok{border:2px solid var(--orange);background:#fff3ea;font-weight:700}
+.stamp{width:26px;height:26px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center;font-size:15px}
+.nbox{background:var(--navy);color:#fff;border-radius:12px;padding:12px;text-align:center;margin:10px 0}.nbox .n{font-size:40px;font-weight:700;color:#ffb48f;line-height:1.3}
+.panel{border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
+.btn:disabled{opacity:.5}
 </style>
 </head>
 <body>
@@ -71,6 +80,7 @@ mask:radial-gradient(circle 16px at 0 62%,#0000 98%,#000) left/51% 100% no-repea
 <div class="row"><span class="tag">تاریخ حرکت:</span><span class="val" id="vd"></span></div>
 <div class="row"><span class="tag">مقصد:</span><span class="val" id="vp"></span></div>
 <button class="btn" data-go="2">ثبت‌نام و گرفتن بلیت</button>
+<button class="btn ghost" id="v1pp" type="button">قبلاً ثبت‌نام کرده‌ام؛ پاسپورتم</button>
 <div class="after">به دانشگاه خوش آمدی؛ امیدواریم این سفر، یکی از به‌یادماندنی‌ترین مسیرهای زندگی‌ات باشد.<br>ایستگاه‌های مسیر را در اینستاگرام ببین.</div>
 </section>
 
@@ -104,22 +114,34 @@ mask:radial-gradient(circle 16px at 0 62%,#0000 98%,#000) left/51% 100% no-repea
 </div>
 <div class="done"><span class="tick" aria-hidden="true">✓</span><span>ثبت‌نامت انجام شد! از این صفحه اسکرین‌شات بگیر و روز جشن نشونش بده.</span></div>
 <button class="btn ghost" data-go="1">بازگشت به کارت</button>
+<button class="btn" id="topp" type="button">پاسپورت چالش‌ها</button>
 <p class="lead" id="tm" hidden style="font-size:12px;margin-top:8px">حالت آزمایشی: اطلاعات جایی ذخیره نشد.</p>
 <div class="social"><p>ایستگاه‌های مسیر را اینجا دنبال کن</p><div class="chips" id="chIg"></div><div class="chips" id="chTg"></div></div>
+</section>
+<section class="view" id="v4">
+<div class="top"><b>پاسپورت همسفر</b><div id="pn2"></div><span class="code" id="pc2"></span></div>
+<div class="panel" id="ask" hidden><b>کد پیگیری‌ات را وارد کن</b><input id="pcode" type="tel" inputmode="numeric" autocomplete="off"><button class="btn" id="pgo" type="button">ورود</button></div>
+<div id="pflash"></div>
+<b id="pprog"></b><div class="bar"><i id="pfill"></i></div>
+<div class="grid" id="pgrid"></div>
+<div id="plot"></div>
+<div class="panel" id="pform"><b>ثبت چالش</b><div style="font-size:13px;color:var(--muted)">چالش یک انجمن را انجام بده و رمز آن را از اعضای انجمن بگیر.</div>
+<input id="pw" type="text" autocomplete="off" placeholder="رمز انجمن"><div class="err" id="perr" role="alert"></div>
+<button class="btn" id="psub" type="button">ثبت چالش</button></div>
 </section>
 </main>
 
 <div class="pop" id="pop" role="dialog" aria-modal="true" aria-labelledby="pt"><div class="box"><div class="big" aria-hidden="true">✓</div><h2 id="pt">ثبت‌نامت انجام شد! 🎉</h2><p>بلیت اسم‌دارت آماده‌ست.<br>ازش اسکرین‌شات بگیر و روز جشن نشونش بده.</p><button class="btn" id="pc" type="button">دیدن بلیتم</button></div></div>
 <script>
 (function(){
-var C={ENDPOINT:'https://script.google.com/macros/s/AKfycbyoU8roxlRTOSVVAfShRauyZsKuHR0fQjXYvnWpxzy1IY9rAyTyiPcuhe-fw7eTiDYqTw/exec',DATE:'',PLACE:'حیاط دانشگاه',IG:[['کامپیوتر','alzahra_computer_assoc'],['معماری','alzahra_memari'],['گرافیک','graphic.alzahramashhad'],['صنایع غذایی','assocnooshafar_alz'],['تربیت بدنی','alzahra.sport.association'],['طراحی پوشاک','tarahiposhak_alzahra']],TG:[]};
+var C={ENDPOINT:'https://script.google.com/macros/s/AKfycbyoU8roxlRTOSVVAfShRauyZsKuHR0fQjXYvnWpxzy1IY9rAyTyiPcuhe-fw7eTiDYqTw/exec',DATE:'',PLACE:'حیاط دانشگاه',IG:[['کامپیوتر','alzahra_computer_assoc'],['معماری','alzahra_memari'],['گرافیک','graphic.alzahramashhad'],['صنایع غذایی','assocnooshafar_alz'],['ت    ربیت بدنی','alzahra.sport.association']],TG:[]};
 var $=function(i){return document.getElementById(i)};
 var IC={ig:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',tg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M21 4 3 11l6 2 2 6 3-4 5 4z"/></svg>'};
 function chips(el,list,base,ic){$(el).innerHTML=list.map(function(x){return '<a class="chip" href="'+base+x[1]+'" target="_blank" rel="noopener">'+ic+'<span>'+x[0]+'</span></a>'}).join('')}
 chips('chIg',C.IG,'https://instagram.com/',IC.ig);chips('chTg',C.TG,'https://t.me/',IC.tg);
 var soon='\u0628\u0647\u200c\u0632\u0648\u062f\u06cc \u0627\u0639\u0644\u0627\u0645 \u0645\u06cc\u200c\u0634\u0648\u062f';
 $('vd').textContent=$('td').textContent=C.DATE||soon;$('vp').textContent=$('tp').textContent=C.PLACE;
-function go(n){[1,2,3].forEach(function(i){$('v'+i).classList.toggle('on',i===n)});window.scrollTo(0,0)}
+function go(n){[1,2,3,4].forEach(function(i){$('v'+i).classList.toggle('on',i===n)});window.scrollTo(0,0)}
 function en(s){return s.replace(/[\u06f0-\u06f9]/g,function(d){return d.charCodeAt(0)-1776}).replace(/[\u0660-\u0669]/g,function(d){return d.charCodeAt(0)-1632})}
 function nid(c){if(!/^\d{10}$/.test(c)||/^(\d)\1{9}$/.test(c))return false;var s=0,i;for(i=0;i<9;i++)s+=(+c[i])*(10-i);var r=s%11;return r<2?+c[9]===r:+c[9]===11-r}
 function openPop(){$('pop').classList.add('on');$('pc').focus()}
@@ -127,7 +149,7 @@ function closePop(){$('pop').classList.remove('on')}
 $('pc').addEventListener('click',closePop);
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closePop()});
 document.addEventListener('click',function(e){var t=e.target.closest('[data-go]');if(t)go(+t.dataset.go)});
-function done(d,code,test){$('tn').textContent=d.name;$('tg').textContent='\u0631\u0634\u062a\u0647: '+d.field;$('tc').textContent=String(code).replace(/\d/g,function(x){return '\u06f0\u06f1\u06f2\u06f3\u06f4\u06f5\u06f6\u06f7\u06f8\u06f9'[x]});$('tm').hidden=!test;$('f').reset();go(3);openPop()}
+function done(d,code,test){$('tn').textContent=d.name;$('tg').textContent='\u0631\u0634\u062a\u0647: '+d.field;$('tc').textContent=String(code).replace(/\d/g,function(x){return '\u06f0\u06f1\u06f2\u06f3\u06f4\u06f5\u06f6\u06f7\u06f8\u06f9'[x]});$('tm').hidden=!test;if(!test)save({code:String(code),name:d.name});$('f').reset();go(3);openPop()}
 $('f').addEventListener('submit',function(e){
 e.preventDefault();
 var d={name:$('n').value.trim().replace(/\s+/g,' '),nid:en($('k').value).replace(/\s/g,''),level:$('m').value,field:$('fd').value.trim(),phone:en($('p').value).replace(/[\s-]/g,'')};
@@ -141,6 +163,36 @@ if(r.ok)done(d,r.code,false);
 else $('e').textContent=r.error==='duplicate'?'\u0628\u0627 \u0627\u06cc\u0646 \u06a9\u062f \u0645\u0644\u06cc \u0642\u0628\u0644\u0627\u064b \u062b\u0628\u062a\u200c\u0646\u0627\u0645 \u0634\u062f\u0647. \u0627\u06af\u0647 \u0628\u0644\u06cc\u062a\u062a \u0631\u0648 \u06af\u0645 \u06a9\u0631\u062f\u06cc \u0628\u0647 \u0627\u0646\u062c\u0645\u0646 \u062e\u0628\u0631 \u0628\u062f\u0647.':'\u0645\u0634\u06a9\u0644\u06cc \u067e\u06cc\u0634 \u0627\u0648\u0645\u062f\u060c \u062f\u0648\u0628\u0627\u0631\u0647 \u0627\u0645\u062a\u062d\u0627\u0646 \u06a9\u0646.'
 }).catch(function(){$('e').textContent='\u0627\u0631\u062a\u0628\u0627\u0637 \u0628\u0631\u0642\u0631\u0627\u0631 \u0646\u0634\u062f. \u0627\u06cc\u0646\u062a\u0631\u0646\u062a\u062a \u0631\u0648 \u0686\u06a9 \u06a9\u0646 \u0648 \u062f\u0648\u0628\u0627\u0631\u0647 \u0627\u0645\u062a\u062d\u0627\u0646 \u06a9\u0646.'}).then(function(){b.disabled=false;b.textContent=old});
 });
+var FL=[].slice.call($('fd').options).slice(1).map(function(o){return o.text}),CODE='';
+function saved(){try{return JSON.parse(localStorage.getItem('jashn')||'null')}catch(x){return null}}
+function save(o){try{localStorage.setItem('jashn',JSON.stringify(o))}catch(x){}}
+function fa(n){return String(n).replace(/\d/g,function(x){return '۰۱۲۳۴۵۶۷۸۹'[x]})}
+function post(o){return fetch(C.ENDPOINT,{method:'POST',body:JSON.stringify(o)}).then(function(r){return r.json()})}
+function paintP(r){
+$('ask').hidden=true;$('pform').hidden=false;$('pn2').textContent=r.name;$('pc2').textContent='کد '+fa(CODE);
+var c=r.done.length;$('pprog').textContent=fa(c)+' از '+fa(FL.length)+' انجمن ثبت شد';
+$('pfill').style.width=Math.round(c/FL.length*100)+'%';
+$('pgrid').innerHTML=FL.map(function(n){var d=r.done.indexOf(n)>=0;return '<div class="tile'+(d?' ok':'')+'">'+(d?'<span class="stamp">✓</span>':'')+n+'</div>'}).join('');
+var h='';
+if(r.num){h='<div class="nbox">شماره‌ی قرعه‌کشی تو<div class="n">'+fa(r.num)+'</div><div style="font-size:13px">روز جشن همین صفحه را نشان بده</div></div>';
+if(r.published)h+=r.won?'<div class="done"><span class="tick">🎉</span><span>تبریک! شماره‌ی تو برنده شد.</span></div>':'<div style="font-size:14px;text-align:center">این بار شماره‌ی تو برنده نشد. ممنون که همراه بودی!</div>'}
+else h='<div style="font-size:13px;color:var(--muted)">هنوز '+fa(Math.max(r.need-c,0))+' انجمن مانده تا وارد قرعه‌کشی شوی.</div>';
+$('plot').innerHTML=h}
+function openP(){
+go(4);$('pflash').innerHTML='';$('perr').textContent='';var sv=saved();
+if(!C.ENDPOINT){$('pform').hidden=true;$('ask').hidden=true;$('pprog').textContent='حالت آزمایشی: پاسپورت بعد از وصل شدن به سرور کار می‌کند.';return}
+if(!sv){$('pform').hidden=true;$('ask').hidden=false;return}
+CODE=sv.code;post({action:'status',code:CODE}).then(function(r){if(r.ok)paintP(r);else{$('pform').hidden=true;$('ask').hidden=false;$('pflash').innerHTML='<div class="err">کد پیدا نشد.</div>'}}).catch(function(){$('perr').textContent='ارتباط برقرار نشد.'})}
+$('v1pp').addEventListener('click',openP);$('topp').addEventListener('click',openP);
+$('pgo').addEventListener('click',function(){var c=en($('pcode').value).replace(/\s/g,'');if(!c)return;post({action:'status',code:c}).then(function(r){if(r.ok){CODE=c;save({code:c,name:r.name});paintP(r)}else $('pflash').innerHTML='<div class="err">این کد پیدا نشد.</div>'}).catch(function(){$('pflash').innerHTML='<div class="err">ارتباط برقرار نشد.</div>'})});
+$('psub').addEventListener('click',function(){
+var w=$('pw').value.trim();if(!w){$('perr').textContent='رمز را بنویس.';return}
+var b=$('psub');b.disabled=true;$('perr').textContent='';
+post({action:'challenge',code:CODE,word:w}).then(function(r){
+if(r.ok){paintP(r);$('pw').value='';$('pflash').innerHTML='<div class="done"><span class="tick">✓</span><span>'+(r.already?'این انجمن را قبلاً ثبت کرده‌بودی':'چالش انجمن '+r.assoc+' ثبت شد')+'</span></div>'}
+else $('perr').textContent=r.error==='word'?'رمز اشتباه است. از اعضای انجمن بپرس.':'مشکلی پیش آمد، دوباره امتحان کن.'
+}).catch(function(){$('perr').textContent='ارتباط برقرار نشد. دوباره امتحان کن.'}).then(function(){b.disabled=false})});
+if(saved()&&C.ENDPOINT)openP();
 })();
 </script>
 </body>
