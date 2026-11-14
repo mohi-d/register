@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>قرعه&zwnj;کشی بزرگ</title>
+<style>
+:root{--navy:#121A5C;--orange:#E96B35}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--navy);color:#fff;font-family:Vazirmatn,Tahoma,"Segoe UI",sans-serif;text-align:center;padding:24px 16px}
+h1{font-size:clamp(28px,6vw,56px);margin:0}
+.sub{opacity:.8;font-size:clamp(14px,2.4vw,22px)}
+.ctl{margin:18px auto;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+input{font:inherit;padding:8px 12px;border-radius:10px;border:0;min-width:200px}
+button{font:inherit;font-weight:700;border:0;border-radius:12px;background:var(--orange);color:#fff;padding:8px 24px;font-size:clamp(16px,3vw,26px);cursor:pointer}
+button:disabled{opacity:.5}
+.balls{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(6px,1.5vw,18px);max-width:900px;margin:24px auto}
+.ball{aspect-ratio:1;border-radius:50%;background:var(--orange);display:grid;place-items:center;font-weight:700;font-size:clamp(18px,4vw,44px)}
+.err{color:#ffb4a8;min-height:24px}
+@media (prefers-reduced-motion:no-preference){.ball{animation:pop .4s ease}@keyframes pop{from{transform:scale(0)}}}
+</style>
+</head>
+<body>
+<h1>قرعه&zwnj;کشی بزرگ 🎉</h1>
+<div class="sub" id="cnt"></div>
+<div class="ctl"><input id="k" type="password" placeholder="کلید مدیر" autocomplete="off"><button id="go" type="button">شروع قرعه&zwnj;کشی</button></div>
+<div class="err" id="e" role="alert"></div>
+<div class="balls" id="b"></div>
+<script>
+var ENDPOINT='';
+var $=function(i){return document.getElementById(i)};
+function fa(n){return String(n).replace(/\d/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'[d]})}
+$('go').addEventListener('click',function(){
+if(!ENDPOINT){$('e').textContent='ENDPOINT را در فایل پر کن.';return}
+var b=$('go');b.disabled=true;$('e').textContent='';$('b').innerHTML='';
+fetch(ENDPOINT,{method:'POST',body:JSON.stringify({action:'draw',key:$('k').value})}).then(function(r){return r.json()}).then(function(r){
+if(!r.ok){$('e').textContent=r.error==='key'?'کلید اشتباه است.':r.error==='empty'?'هنوز کسی وارد قرعه\u200cکشی نشده.':'مشکلی پیش آمد.';b.disabled=false;return}
+$('cnt').textContent=fa(r.count)+' شرکت\u200cکننده · '+fa(r.winners.length)+' برنده';
+var k=0,iv=setInterval(function(){
+$('b').insertAdjacentHTML('beforeend','<div class="ball">'+fa(r.winners[k++])+'</div>');
+if(k>=r.winners.length){clearInterval(iv)}},900)
+}).catch(function(){$('e').textContent='ارتباط برقرار نشد.';b.disabled=false})});
+</script>
+</body>
+</html>
